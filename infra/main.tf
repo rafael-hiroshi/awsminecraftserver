@@ -19,7 +19,7 @@ resource "aws_instance" "minecraft_server" {
   security_groups = [aws_security_group.allow_game_traffic.name]
 
   root_block_device {
-    delete_on_termination = false
+    delete_on_termination = true
     encrypted = true
     iops = 3000
     throughput = 125
@@ -61,6 +61,7 @@ resource "aws_security_group" "allow_game_traffic" {
 }
 
 resource "aws_iam_role_policy_attachment" "aws_iam_role_attach"{
+  # TODO: Adicionar todas as roles relevantes, só tem 1 pq estava testando o caminho feliz
   role       = aws_iam_role.ec2_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
@@ -93,7 +94,7 @@ resource "aws_iam_policy" "s3_bucket" {
         "Action": [
           "s3:ListBucket"
         ],
-        "Resource": var.s3_bucket_arn
+        "Resource": data.aws_s3_bucket.s3_bucket.arn
       },
       {
         "Effect": "Allow",
@@ -101,7 +102,7 @@ resource "aws_iam_policy" "s3_bucket" {
           "s3:PutObject",
           "s3:GetObject"
         ],
-        "Resource": "${var.s3_bucket_arn}/*"
+        "Resource": "${data.aws_s3_bucket.s3_bucket.arn}/*"
       }
     ]
   })
