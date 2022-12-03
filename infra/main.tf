@@ -60,10 +60,17 @@ resource "aws_security_group" "allow_game_traffic" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "aws_iam_role_attach"{
-  # TODO: Adicionar todas as roles relevantes, só tem 1 pq estava testando o caminho feliz
+resource "aws_iam_role_policy_attachment" "aws_iam_role_attach" {
+  for_each = toset([
+    aws_iam_policy.s3_bucket.arn,
+    aws_iam_policy.kms_policy.arn,
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy"
+  ])
+
+  depends_on = [aws_iam_role.ec2_service_role]
   role       = aws_iam_role.ec2_service_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  policy_arn = each.value
 }
 
 resource "aws_iam_role" "ec2_service_role" {
