@@ -34,7 +34,7 @@ resource "aws_instance" "minecraft_server" {
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "MinecraftServerEC2InstanceProfile"
+  name = "EC2MinecraftInstanceProfile"
   role = aws_iam_role.ec2_service_role.name
 }
 
@@ -74,7 +74,7 @@ resource "aws_iam_role_policy_attachment" "aws_iam_role_attach" {
 }
 
 resource "aws_iam_role" "ec2_service_role" {
-  name = "MinecraftServerEC2ServiceRole"
+  name = "EC2MinecraftServiceRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -91,7 +91,7 @@ resource "aws_iam_role" "ec2_service_role" {
 }
 
 resource "aws_iam_policy" "s3_bucket" {
-  name = "MinecraftServerS3AccessPolicy"
+  name = "EC2MinecraftS3AccessPolicy"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -116,7 +116,7 @@ resource "aws_iam_policy" "s3_bucket" {
 }
 
 resource "aws_iam_policy" "kms_policy" {
-  name = "MinecraftServerKMSPolicy"
+  name = "EC2MinecraftKMSPolicy"
 
   policy = jsonencode({
     Version = "2012-10-17"
