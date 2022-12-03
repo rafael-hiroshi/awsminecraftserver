@@ -12,25 +12,26 @@ provider "aws" {
 }
 
 resource "aws_instance" "minecraft_server" {
-  ami           = var.ec2_ami
-  instance_type = "t3.micro"
-  hibernation = true
+  ami                  = var.ec2_ami
+  instance_type        = "t3.medium"
+  hibernation          = true
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
-  security_groups = [aws_security_group.allow_game_traffic.name]
-  user_data = file("${path.module}/files/user_data.sh")
+  security_groups      = [aws_security_group.allow_game_traffic.name]
+  user_data            = file("${path.module}/files/user_data.sh")
 
   root_block_device {
     delete_on_termination = true
-    encrypted = true
-    iops = 3000
-    throughput = 125
-    kms_key_id = var.kms_key_arn
-    volume_size = 12
-    volume_type = "gp3"
+    encrypted             = true
+    iops                  = 3000
+    throughput            = 125
+    kms_key_id            = var.kms_key_arn
+    volume_size           = 12
+    volume_type           = "gp3"
   }
 
   tags = {
     Name = "Minecraft Server"
+    IaC  = "Terraform"
   }
 }
 
@@ -81,14 +82,14 @@ resource "aws_iam_role_policy_attachment" "aws_iam_role_attach" {
 }
 
 resource "aws_iam_role" "ec2_service_role" {
-  name = "EC2MinecraftServiceRole"
+  name               = "EC2MinecraftServiceRole"
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
+        Sid       = ""
         Principal = {
           Service = "ec2.amazonaws.com"
         }
@@ -101,22 +102,22 @@ resource "aws_iam_policy" "s3_bucket" {
   name = "EC2MinecraftS3AccessPolicy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "s3:ListBucket"
         ],
-        "Resource": data.aws_s3_bucket.s3_bucket.arn
+        "Resource" : data.aws_s3_bucket.s3_bucket.arn
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        "Effect" : "Allow",
+        "Action" : [
           "s3:PutObject",
           "s3:GetObject"
         ],
-        "Resource": "${data.aws_s3_bucket.s3_bucket.arn}/*"
+        "Resource" : "${data.aws_s3_bucket.s3_bucket.arn}/*"
       }
     ]
   })
@@ -126,13 +127,13 @@ resource "aws_iam_policy" "kms_policy" {
   name = "EC2MinecraftKMSPolicy"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        "Sid": "VisualEditor0",
-        "Effect": "Allow",
-        "Action": "kms:*",
-        "Resource": "*"
+        "Sid" : "VisualEditor0",
+        "Effect" : "Allow",
+        "Action" : "kms:*",
+        "Resource" : "*"
       }
     ]
   })
