@@ -17,7 +17,7 @@ resource "aws_instance" "minecraft_server" {
   hibernation = true
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   security_groups = [aws_security_group.allow_game_traffic.name]
-  user_data = file("user_data.sh")
+  user_data = file("${path.module}/files/user_data.sh")
 
   root_block_device {
     delete_on_termination = true
@@ -32,6 +32,12 @@ resource "aws_instance" "minecraft_server" {
   tags = {
     Name = "Minecraft Server"
   }
+}
+
+resource "aws_ssm_parameter" "cloudwatch_agent_configuration" {
+  name  = "AmazonCloudWatch-EC2MinecraftServerCWAgent"
+  type  = "String"
+  value = file("${path.module}/files/cloudwatch_agent_configuration.json")
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {

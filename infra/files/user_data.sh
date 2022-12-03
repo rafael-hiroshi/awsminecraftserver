@@ -30,3 +30,5 @@ __EOF__
 
 chmod +x start_server.sh
 chmod +x s3_backup.sh
+
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-EC2MinecraftServerCWAgent -s
