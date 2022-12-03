@@ -17,6 +17,7 @@ resource "aws_instance" "minecraft_server" {
   hibernation = true
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   security_groups = [aws_security_group.allow_game_traffic.name]
+  user_data = file("user_data.sh")
 
   root_block_device {
     delete_on_termination = true
