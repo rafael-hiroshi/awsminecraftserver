@@ -12,7 +12,7 @@ provider "aws" {
 }
 
 module "iam_sr" {
-  source = "./iamsr"
+  source         = "./iamsr"
   s3_bucket_name = data.aws_s3_bucket.s3_bucket.bucket
 }
 
@@ -22,7 +22,7 @@ resource "aws_instance" "minecraft_server" {
   hibernation          = true
   iam_instance_profile = module.iam_sr.ec2_instance_profile
   security_groups      = [aws_security_group.allow_game_traffic.name]
-  user_data            = var.lookup_ami ? null : file("${path.module}/files/user_data.sh")
+  user_data            = var.lookup_ami ? null : file("${path.module}/../scripts/user_data.sh")
 
   root_block_device {
     delete_on_termination = true

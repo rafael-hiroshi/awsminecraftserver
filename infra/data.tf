@@ -3,10 +3,10 @@ data "aws_s3_bucket" "s3_bucket" {
 }
 
 data "aws_ami" "minecraft_ami" {
-  most_recent      = true
-  owners           = [var.account_id]
+  most_recent = true
+  owners      = [var.account_id]
 
   tags = {
-    "Version": "v1.19.2"
+    "Version" : "v1.19.2"
   }
 }
