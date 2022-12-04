@@ -18,7 +18,11 @@ cd "$BASE_PATH" || exit
 cat >start_server.sh <<__EOF__
 #!/bin/bash -x
 
-java -Xms1024M -Xmx3584M -jar $SERVER_DIRECTORY/server.jar nogui
+cd $SERVER_DIRECTORY
+aws s3 cp s3://hiroshi-minecraft-servers-data/1.19.2/minecraft_server_1.19.2.zip .
+unzip minecraft_server_1.19.2.zip
+rm -fv minecraft_server_1.19.2.zip
+java -Xms1024M -Xmx3584M -jar server.jar nogui
 __EOF__
 
 cat >s3_backup.sh <<__EOF__
@@ -29,17 +33,28 @@ zip -r minecraft_server_$MINECRAFT_VERSION.zip .
 aws s3 cp minecraft_server_$MINECRAFT_VERSION.zip s3://hiroshi-minecraft-servers-data/1.19.2/minecraft_server_$MINECRAFT_VERSION.zip
 __EOF__
 
-cat >s3_fetch.sh <<__EOF__
-#!/bin/bash -x
-
-cd $SERVER_DIRECTORY
-aws s3 cp s3://hiroshi-minecraft-servers-data/1.19.2/minecraft_server_1.19.2.zip .
-unzip minecraft_server_1.19.2.zip
-rm -fv minecraft_server_1.19.2.zip
-__EOF__
-
 chmod +x start_server.sh
 chmod +x s3_backup.sh
-chmod +x s3_fetch.sh
 
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-EC2MinecraftServerCWAgent -s
+
+cat >minecraft.service <<__EOF__
+[Unit]
+Description=Minecraft Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/usr/bin/env ./$BASE_PATH/start_server.sh
+
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+mv minecraft.service /etc/systemd/system/
+systemctl start minecraft.service
+systemctl enable minecraft.service
