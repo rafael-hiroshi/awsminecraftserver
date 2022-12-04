@@ -11,11 +11,16 @@ provider "aws" {
   region = "sa-east-1"
 }
 
+module "iam_sr" {
+  source = "./iamsr"
+  s3_bucket_name = data.aws_s3_bucket.s3_bucket.bucket
+}
+
 resource "aws_instance" "minecraft_server" {
   ami                  = var.lookup_ami ? data.aws_ami.minecraft_ami.id : var.amazon_linux_ami
   instance_type        = "t3.medium"
   hibernation          = true
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  iam_instance_profile = module.iam_sr.ec2_instance_profile
   security_groups      = [aws_security_group.allow_game_traffic.name]
   user_data            = var.lookup_ami ? null : file("${path.module}/files/user_data.sh")
 
@@ -33,17 +38,6 @@ resource "aws_instance" "minecraft_server" {
     Name = "Minecraft Server"
     IaC  = "Terraform"
   }
-}
-
-resource "aws_ssm_parameter" "cloudwatch_agent_configuration" {
-  name  = "AmazonCloudWatch-EC2MinecraftServerCWAgent"
-  type  = "String"
-  value = file("${path.module}/files/cloudwatch_agent_configuration.json")
-}
-
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "EC2MinecraftInstanceProfile"
-  role = aws_iam_role.ec2_service_role.name
 }
 
 resource "aws_security_group" "allow_game_traffic" {
@@ -68,75 +62,8 @@ resource "aws_security_group" "allow_game_traffic" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "aws_iam_role_attach" {
-  for_each = toset([
-    aws_iam_policy.s3_bucket.arn,
-    aws_iam_policy.kms_policy.arn,
-    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy"
-  ])
-
-  depends_on = [aws_iam_role.ec2_service_role]
-  role       = aws_iam_role.ec2_service_role.name
-  policy_arn = each.value
-}
-
-resource "aws_iam_role" "ec2_service_role" {
-  name               = "EC2MinecraftServiceRole"
-  assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Sid       = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
-resource "aws_iam_policy" "s3_bucket" {
-  name = "EC2MinecraftS3AccessPolicy"
-
-  policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:ListBucket"
-        ],
-        "Resource" : data.aws_s3_bucket.s3_bucket.arn
-      },
-      {
-        "Effect" : "Allow",
-        "Action" : [
-          "s3:PutObject",
-          "s3:GetObject",
-          "s3:ListObjectVersions",
-          "s3:GetObjectVersion"
-        ],
-        "Resource" : "${data.aws_s3_bucket.s3_bucket.arn}/*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy" "kms_policy" {
-  name = "EC2MinecraftKMSPolicy"
-
-  policy = jsonencode({
-    Version   = "2012-10-17"
-    Statement = [
-      {
-        "Sid" : "VisualEditor0",
-        "Effect" : "Allow",
-        "Action" : "kms:*",
-        "Resource" : "*"
-      }
-    ]
-  })
+resource "aws_ssm_parameter" "cloudwatch_agent_configuration" {
+  name  = "AmazonCloudWatch-EC2MinecraftServerCWAgent"
+  type  = "String"
+  value = file("${path.module}/files/cloudwatch_agent_configuration.json")
 }
