@@ -16,6 +16,10 @@ module "iam_sr" {
   s3_bucket_name = data.aws_s3_bucket.s3_bucket.bucket
 }
 
+module "ssm" {
+  source = "./ssm"
+}
+
 resource "aws_instance" "minecraft_server" {
   ami                  = var.lookup_ami ? data.aws_ami.minecraft_ami.id : var.amazon_linux_ami
   instance_type        = "t3.medium"
@@ -60,10 +64,4 @@ resource "aws_security_group" "allow_game_traffic" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-}
-
-resource "aws_ssm_parameter" "cloudwatch_agent_configuration" {
-  name  = "AmazonCloudWatch-EC2MinecraftServerCWAgent"
-  type  = "String"
-  value = file("${path.module}/files/cloudwatch_agent_configuration.json")
 }
