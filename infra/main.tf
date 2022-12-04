@@ -12,12 +12,12 @@ provider "aws" {
 }
 
 resource "aws_instance" "minecraft_server" {
-  ami                  = var.ec2_ami
+  ami                  = var.lookup_ami ? data.aws_ami.minecraft_ami.id : var.amazon_linux_ami
   instance_type        = "t3.medium"
   hibernation          = true
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   security_groups      = [aws_security_group.allow_game_traffic.name]
-  user_data            = file("${path.module}/files/user_data.sh")
+  user_data            = var.lookup_ami ? null : file("${path.module}/files/user_data.sh")
 
   root_block_device {
     delete_on_termination = true
