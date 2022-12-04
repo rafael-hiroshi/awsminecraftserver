@@ -21,7 +21,8 @@ resource "aws_iam_role_policy_attachment" "aws_iam_kms_policy_attach" {
 resource "aws_iam_role_policy_attachment" "aws_iam_managed_policy_attach" {
   for_each = toset([
     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-    "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy"
+    "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy",
+    "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
   ])
 
   role       = aws_iam_role.ec2_service_role.name
