@@ -47,7 +47,7 @@ resource "aws_instance" "minecraft_server" {
 resource "aws_security_group" "allow_game_traffic" {
   name        = "Minecraft Server Instance SG"
   description = "Allow default minecraft game inbound traffic"
-  vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     from_port        = 25565
