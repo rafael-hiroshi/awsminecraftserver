@@ -115,7 +115,9 @@ resource "aws_iam_policy" "s3_bucket" {
         "Effect" : "Allow",
         "Action" : [
           "s3:PutObject",
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:ListObjectVersions",
+          "s3:GetObjectVersion"
         ],
         "Resource" : "${data.aws_s3_bucket.s3_bucket.arn}/*"
       }
