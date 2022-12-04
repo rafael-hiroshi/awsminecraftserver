@@ -4,8 +4,6 @@ yum update -y
 yum install java-17-amazon-corretto.x86_64 \
   amazon-cloudwatch-agent -y
 
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-EC2MinecraftServerCWAgent -s
-
 echo "MINECRAFT_VERSION=1.19.2" >> /etc/environment
 echo "S3_BUCKET=hiroshi-minecraft-servers-data" >> /etc/environment
 echo "BASE_PATH=/var/www/minecraft" >> /etc/environment
@@ -56,3 +54,5 @@ chmod +x start_server.sh
 chmod +x s3_backup.sh
 systemctl start minecraft.service
 systemctl enable minecraft.service
+
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c ssm:AmazonCloudWatch-EC2MinecraftServerCWAgent -s

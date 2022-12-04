@@ -20,5 +20,4 @@ variable "account_id" {
 
 variable "lookup_ami" {
   type = bool
-  default = true
 }

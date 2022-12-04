@@ -8,7 +8,7 @@
       "files": {
         "collect_list": [
           {
-            "file_path": "/var/www/minecraft/logs/latest.log",
+            "file_path": "/var/www/minecraft/server/logs/latest.log",
             "log_group_name": "/aws/ec2/EC2MinecraftServer",
             "log_stream_name": "{instance_id}",
             "retention_in_days": -1
