@@ -25,7 +25,7 @@ resource "aws_instance" "minecraft_server" {
     iops                  = 3000
     throughput            = 125
     kms_key_id            = var.kms_key_arn
-    volume_size           = 12
+    volume_size           = 10
     volume_type           = "gp3"
   }
 
