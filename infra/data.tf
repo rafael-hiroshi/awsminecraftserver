@@ -12,8 +12,8 @@ data "aws_ebs_snapshot_ids" "ebs_volumes" {
   owners = ["self"]
 
   filter {
-    name   = "volume-size"
-    values = ["10"]
+    name   = "tag:Name"
+    values = ["v1.19.2"]
   }
 }
 
@@ -27,7 +27,7 @@ data "aws_vpc" "default" {
 
 data "aws_ami" "minecraft_ami" {
   most_recent = true
-  owners      = [var.account_id]
+  owners      = ["self"]
 
   tags = {
     "Version" : "v1.19.2"
