@@ -33,3 +33,22 @@ data "aws_ami" "minecraft_ami" {
     "Version" : "v1.19.2"
   }
 }
+
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name = "name"
+    values = [
+      "amzn2-ami-kernel-5.10-hvm-2.0.*.3-x86_64-gp2",
+    ]
+  }
+
+  filter {
+    name = "owner-alias"
+    values = [
+      "amazon",
+    ]
+  }
+}

@@ -25,11 +25,11 @@ resource "aws_launch_template" "server" {
   disable_api_stop                     = false
   disable_api_termination              = false
   update_default_version               = true
-  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : var.amazon_linux_ami
+  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : data.aws_ami.amazon_linux.id
   instance_initiated_shutdown_behavior = "terminate"
   instance_type                        = "t3.medium"
   key_name                             = "terraform-aws"
-  user_data                            = var.lookup_ami ? null : filebase64(file("${path.module}/../scripts/user_data.sh"))
+  user_data                            = var.lookup_ami ? null : filebase64("${path.module}/../scripts/user_data.sh")
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -42,7 +42,7 @@ resource "aws_launch_template" "server" {
       kms_key_id            = data.aws_kms_key.current.arn
       volume_size           = 10
       volume_type           = "gp3"
-      snapshot_id           = data.aws_ebs_snapshot_ids.ebs_volumes.ids[0]
+      snapshot_id           = var.lookup_ami ? data.aws_ebs_snapshot_ids.ebs_volumes.ids[0] : null
     }
   }
 
