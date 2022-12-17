@@ -18,9 +18,13 @@ cat >start_server.sh <<__EOF__
 #!/bin/bash -x
 
 cd $SERVER_DIRECTORY
-aws s3 cp s3://hiroshi-minecraft-servers-data/1.19.2/minecraft_server_1.19.2.zip .
-unzip minecraft_server_1.19.2.zip
-rm -fv minecraft_server_1.19.2.zip
+
+if ! [[ -f "server.jar" ]]; then
+    aws s3 cp s3://hiroshi-minecraft-servers-data/1.19.2/minecraft_server_1.19.2.zip .
+    unzip minecraft_server_1.19.2.zip
+    rm -fv minecraft_server_1.19.2.zip
+fi
+
 java -Xms1024M -Xmx3584M -jar server.jar nogui
 __EOF__
 
