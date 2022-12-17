@@ -12,7 +12,7 @@ data "aws_ebs_snapshot_ids" "ebs_volumes" {
   owners = ["self"]
 
   filter {
-    name   = "tag:Name"
+    name   = "tag:Version"
     values = ["v1.19.2"]
   }
 }
@@ -34,14 +34,33 @@ data "aws_ami" "minecraft_ami" {
   }
 }
 
-data "aws_ami" "amazon_linux" {
+data "aws_ami" "amazon_linux_arm64" {
   most_recent = true
   owners = ["amazon"]
 
   filter {
     name = "name"
     values = [
-      "amzn2-ami-kernel-5.10-hvm-2.0.*.3-x86_64-gp2",
+      "amzn2-ami-kernel-5.10-hvm-2.0.*.1-arm64-gp2",
+    ]
+  }
+
+  filter {
+    name = "owner-alias"
+    values = [
+      "amazon",
+    ]
+  }
+}
+
+data "aws_ami" "amazon_linux_x86" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name = "name"
+    values = [
+      "amzn2-ami-kernel-5.10-hvm-2.0.*.3-x86_64-gp2"
     ]
   }
 

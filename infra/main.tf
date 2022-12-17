@@ -27,13 +27,13 @@ module "ssm" {
 }
 
 resource "aws_launch_template" "server" {
-  name                                 = "MinecraftServerLaunchTemplate"
+  name                                 = "MinecraftVanillaServer"
   disable_api_stop                     = false
   disable_api_termination              = false
   update_default_version               = true
-  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : data.aws_ami.amazon_linux.id
-  instance_initiated_shutdown_behavior = "terminate"
-  instance_type                        = "t3.medium"
+  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : data.aws_ami.amazon_linux_arm64.id
+  instance_initiated_shutdown_behavior = "stop"
+  instance_type                        = "r6g.medium"
   key_name                             = "terraform-aws"
   user_data                            = var.lookup_ami ? null : filebase64("${path.module}/../scripts/user_data.sh")
 
