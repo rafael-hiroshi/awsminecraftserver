@@ -1,11 +1,9 @@
 #! /bin/bash
 
 yum update -y
-yum install java-17-amazon-corretto.aarch64 \
+yum install java-17-amazon-corretto.${EC2_CPU_ARCHITECTURE} \
   amazon-cloudwatch-agent -y
 
-echo "MINECRAFT_VERSION=1.19.2" >> /etc/environment
-echo "S3_BUCKET=hiroshi-minecraft-servers-data" >> /etc/environment
 echo "BASE_PATH=/var/www/minecraft" >> /etc/environment
 echo "SERVER_DIRECTORY=/var/www/minecraft/server" >> /etc/environment
 
@@ -20,20 +18,20 @@ cat >start_server.sh <<__EOF__
 cd $SERVER_DIRECTORY
 
 if ! [[ -f "server.jar" ]]; then
-    aws s3 cp s3://hiroshi-minecraft-servers-data/$MINECRAFT_VERSION/minecraft_server_$MINECRAFT_VERSION.zip .
-    unzip minecraft_server_$MINECRAFT_VERSION.zip
-    rm -fv minecraft_server_$MINECRAFT_VERSION.zip
+    aws s3 cp s3://${S3_BUCKET}/${MINECRAFT_VERSION}/minecraft_server_${MINECRAFT_VERSION}.zip .
+    unzip minecraft_server_${MINECRAFT_VERSION}.zip
+    rm -fv minecraft_server_${MINECRAFT_VERSION}.zip
 fi
 
-java -Xms2048M -Xmx7680M -jar server.jar nogui
+java -Xms${JAVA_XMS} -Xmx${JAVA_XMX} -jar server.jar nogui
 __EOF__
 
 cat >s3_backup.sh <<__EOF__
 #!/bin/bash -x
 
 cd $SERVER_DIRECTORY
-zip -r minecraft_server_$MINECRAFT_VERSION.zip .
-aws s3 cp minecraft_server_$MINECRAFT_VERSION.zip s3://hiroshi-minecraft-servers-data/$MINECRAFT_VERSION/minecraft_server_$MINECRAFT_VERSION.zip
+zip -r minecraft_server_${MINECRAFT_VERSION}.zip .
+aws s3 cp minecraft_server_${MINECRAFT_VERSION}.zip s3://${S3_BUCKET}/${MINECRAFT_VERSION}/minecraft_server_${MINECRAFT_VERSION}.zip
 __EOF__
 
 cat >minecraft.service <<__EOF__

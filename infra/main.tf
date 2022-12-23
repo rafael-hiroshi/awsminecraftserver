@@ -31,11 +31,11 @@ resource "aws_launch_template" "server" {
   disable_api_stop                     = false
   disable_api_termination              = false
   update_default_version               = true
-  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : data.aws_ami.amazon_linux_arm64.id
+  image_id                             = var.lookup_ami ? data.aws_ami.minecraft_ami.id : data.aws_ami.amazon_linux_x86.id
   instance_initiated_shutdown_behavior = "stop"
-  instance_type                        = "r6g.medium"
+  instance_type                        = "t3.medium"
   key_name                             = "terraform-aws"
-  user_data                            = var.lookup_ami ? null : filebase64("${path.module}/../scripts/user_data.sh")
+  user_data                            = var.lookup_ami ? null : base64encode(data.template_file.environment.rendered)
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -110,5 +110,17 @@ resource "aws_security_group" "allow_game_traffic" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+data "template_file" "environment" {
+  template = file("${path.module}/../scripts/user_data.sh")
+
+  vars = {
+    MINECRAFT_VERSION    = var.game_version
+    S3_BUCKET            = data.aws_s3_bucket.s3_bucket.bucket
+    EC2_CPU_ARCHITECTURE = var.x86_64_package_name
+    JAVA_XMS             = var.min_memory
+    JAVA_XMX             = var.max_memory
   }
 }
