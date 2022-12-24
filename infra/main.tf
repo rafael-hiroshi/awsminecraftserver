@@ -33,7 +33,7 @@ module "launch_template" {
   providers = {
     aws = aws.sa-east-1
   }
-  lookup_ami         = false
+  lookup_ami         = var.lookup_ami
   instance_role_name = module.iam_sr.ec2_instance_profile
   s3_bucket_name     = local.s3_bucket_name
   game_version       = "1.19.2"
