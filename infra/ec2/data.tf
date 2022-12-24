@@ -9,7 +9,7 @@ data "aws_ebs_snapshot_ids" "ebs_volumes" {
 
   filter {
     name   = "tag:Version"
-    values = ["v1.19.2"]
+    values = [var.game_version]
   }
 }
 
@@ -18,7 +18,7 @@ data "aws_ami" "minecraft_ami" {
   owners      = ["self"]
 
   tags = {
-    "Version" : "v1.19.2"
+    "Version" : var.game_version
   }
 }
 

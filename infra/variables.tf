@@ -4,6 +4,7 @@ variable "s3_bucket_prefix" {
 
 variable "lookup_ami" {
   type = bool
+  default = false
 }
 
 variable "game_version" {

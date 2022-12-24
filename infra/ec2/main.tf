@@ -71,7 +71,7 @@ resource "aws_launch_template" "server" {
       Name    = "Minecraft Server from Launch Template"
       IaC     = "Terraform"
       Game    = "Minecraft"
-      Version = "1.19.2"
+      Version = var.game_version
     }
   }
 }
