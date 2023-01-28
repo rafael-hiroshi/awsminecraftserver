@@ -4,24 +4,6 @@ data "aws_kms_key" "current" {
   key_id = data.aws_ebs_default_kms_key.current.key_arn
 }
 
-data "aws_ebs_snapshot_ids" "ebs_volumes" {
-  owners = ["self"]
-
-  filter {
-    name   = "tag:Version"
-    values = [var.game_version]
-  }
-}
-
-data "aws_ami" "minecraft_ami" {
-  most_recent = true
-  owners      = ["self"]
-
-  tags = {
-    "Version" : var.game_version
-  }
-}
-
 data "aws_subnet" "selected" {
   cidr_block = "172.31.32.0/20"
 }

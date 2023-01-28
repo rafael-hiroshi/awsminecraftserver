@@ -1,4 +1,4 @@
-variable "lookup_ami" {
+variable "is_arm64_compatible" {
   type = bool
 }
 

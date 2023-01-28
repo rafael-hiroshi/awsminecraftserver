@@ -2,11 +2,6 @@ variable "s3_bucket_prefix" {
   type = string
 }
 
-variable "lookup_ami" {
-  type = bool
-  default = false
-}
-
 variable "game_version" {
   type = string
   default = "1.19.2"

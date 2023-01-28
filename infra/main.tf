@@ -33,10 +33,10 @@ module "launch_template" {
   providers = {
     aws = aws.sa-east-1
   }
-  lookup_ami         = var.lookup_ami
   instance_role_name = module.iam_sr.ec2_instance_profile
   s3_bucket_name     = local.s3_bucket_name
   game_version       = "1.19.2"
+  is_arm64_compatible = false
   instance_type      = "t3.medium"
   min_memory         = "2048M"
   max_memory         = "3584M"
